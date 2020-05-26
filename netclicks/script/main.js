@@ -1,6 +1,5 @@
 // 
 const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2';
-const API_KEY = '0f071f3c662c1b8ca229d5d4c4113b68';
 
 
 const leftMenu = document.querySelector('.left-menu'),
