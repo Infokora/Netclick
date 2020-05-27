@@ -39,8 +39,8 @@ const renderCard = response => {
      } = item;
 
      const posterIMG = poster ? IMG_URL + poster : 'img/no-poster.jpg';
-     const backdropIMG = ''; // дз если нет bacrdrop то не добавляем ничего
-     const voteElem = ''; // если нет voteElem то не выводим span tv-card__vote
+    const backdropIMG = backdrop ? IMG_URL + backdrop : 'img/no-poster.jpg';
+    const voteElem = vote ? `<span class="tv-card__vote">${vote}</span>` : '';
 
     const card = document.createElement('li');
     card.className = 'tv-shows__item';
