@@ -1,13 +1,21 @@
-// 
 const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2';
-const API_KEY = '0f071f3c662c1b8ca229d5d4c4113b68';
-
+const SERVER = 'https://api.themoviedb.org/3';
+const API_KEY = 24%5 + '0f071f3c662c1b8ca229d5d4c4113b68' + 24%5;
 
 const leftMenu = document.querySelector('.left-menu'),
   hamburger = document.querySelector('.hamburger'),
   tvShowsList = document.querySelector('.tv-shows__list'),
-  modal = document.querySelector('.modal');
+  modal = document.querySelector('.modal'),
+  tvShows = document.querySelector('.tv-shows'),
+  tvCardImg = document.querySelector('.tv-card__img'),
+  modalTitle = document.querySelector('.modal__title'),
+  genresList = document.querySelector('.genres-list'),
+  rating = document.querySelector('.rating'),
+  description = document.querySelector('.description'),
+  modalLink = document.querySelector('.modal__link');
 
+const loading = document.createElement('div');
+loading.className = 'loading';
 
 class DBServise {
   getData = async (url) => {
@@ -15,15 +23,26 @@ class DBServise {
     if (res.ok) {
       return res.json();
     } else {
-      throw new Error(`Не удалось получить данные по адресу ${url}`)
+      throw new Error(`Failed to get data at adres ${url}`);
     }
-
   }
 
   getTestData = () => {
-    return this.getData('test.json')
+    return this.getData('test.json');
   }
+
+  getTestCard = () => {
+    return this.getData('card.json');
+  }
+
+  getSearchResult = query => {
+    return this.getData(SERVER + '/search/tv?api_key=' + API_KEY +
+    '&language=ru-RU&query=' + query);
+  }
+
 }
+
+
 
 const renderCard = response => {
   console.log(response);
@@ -38,30 +57,31 @@ const renderCard = response => {
       vote_average: vote
      } = item;
 
-     const posterIMG = poster ? IMG_URL + poster : 'img/no-poster.jpg';
-    const backdropIMG = backdrop ? IMG_URL + backdrop : 'img/no-poster.jpg';
+    const posterIMG = poster ? IMG_URL + poster : 'img/no-poster.jpg';
+    const backdropIMG = backdrop ? IMG_URL + backdrop : '';
     const voteElem = vote ? `<span class="tv-card__vote">${vote}</span>` : '';
 
     const card = document.createElement('li');
     card.className = 'tv-shows__item';
     card.innerHTML = `
       <a href="#" class="tv-card">
-          <span class="tv-card__vote">${vote}</span>
+          ${voteElem}
           <img class="tv-card__img"
             src="${posterIMG}"
-            data-backdrop="${IMG_URL + backdrop}"
+            data-backdrop="${backdropIMG}"
             alt="${title}">
          <h4 class="tv-card__head">${title}</h4>
       </a>
     `;
-
+    loading.remove();
     tvShowsList.append(card);
   });
+};
 
-
+{
+  tvShows.append(loading);
+  new DBServise().getTestData().then(renderCard);
 }
-new DBServise().getTestData().then(renderCard);
-
 //открытие/закрытие меню
 
 hamburger.addEventListener('click', () => {
@@ -92,19 +112,38 @@ leftMenu.addEventListener('click', (event) => {
 
 // открытие модального окна
 
-tvShowsList.addEventListener('click', () => {
+tvShowsList.addEventListener('click', event => {
 
-  event.preventDefault();
+  event.preventDefault(true);
 
   const target = event.target;
   const card = target.closest('.tv-card');
 
   if (card) {
+
+    new DBServise().getTestCard()
+      .then(data => {
+        console.log(data);
+        tvCardImg.src = IMG_URL + data.poster_path;
+        modalTitle.textContent = data.name;
+        genresList.textContent = '';
+        // for (const item of data.genres) {
+        //  genresList.innerHTML += `<li>${item.name}</li>`;
+        // }
+        data.genres.forEach(item => {
+          genresList.innerHTML += `<li>${item.name}</li>`;
+        })
+
+        
+        rating
+        description
+        modalLink
+    })
+  .then(() => {
     document.body.style.overflow = 'hidden';
     modal.classList.remove('hide');
-  }
-
-});
+  })
+}
 
 // закрытие
 
@@ -137,3 +176,4 @@ const changeImage = event => {
 tvShowsList.addEventListener('mouseover', changeImage);
 tvShowsList.addEventListener('mouseout', changeImage)
 
+})
